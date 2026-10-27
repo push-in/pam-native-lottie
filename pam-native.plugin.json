@@ -1,0 +1,53 @@
+{
+    "$schema": "vendor/pushinbr/pam-native/resources/pam-native.plugin.schema.json",
+    "version": 1,
+    "protocol": 1,
+    "pamNative": {
+        "minimum": "1.0.0",
+        "maximumExclusive": "2.0.0"
+    },
+    "php": {
+        "provider": "Pam\\Native\\Lottie\\LottiePluginProvider"
+    },
+    "android": {
+        "namespace": "dev.pam.lottie",
+        "minSdk": 26,
+        "dependencies": [
+            "com.airbnb.android:lottie:6.6.0"
+        ],
+        "sourceDirs": [
+            "android/src/main/kotlin"
+        ]
+    },
+    "ios": {
+        "minimumVersion": "15.0",
+        "swiftPackages": [
+            {
+                "url": "https://github.com/airbnb/lottie-spm.git",
+                "requirement": {
+                    "kind": 2,
+                    "value": "4.5.0"
+                },
+                "products": [
+                    "Lottie"
+                ]
+            }
+        ],
+        "sourceDirs": [
+            "ios/Sources"
+        ],
+        "frameworks": [
+            "QuartzCore",
+            "UIKit"
+        ]
+    },
+    "idl": "pam-native.idl.json",
+    "modules": [],
+    "views": [
+        {
+            "name": "lottie.view",
+            "class": "dev.pam.lottie.LottieViewFactory",
+            "iosClass": "LottieViewFactory"
+        }
+    ]
+}

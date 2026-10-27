@@ -1,0 +1,103 @@
+diff --git a/composer.json b/composer.json
+index 5a81b53..3b0f163 100644
+--- a/composer.json
++++ b/composer.json
+@@ -37,6 +37,7 @@
+     "pushinbr/pam-native-background-transfer": "^0.4.0",
+     "pushinbr/pam-native-calls": "^0.2.0",
+     "pushinbr/pam-native-media": "dev-fix/ios-camera-enabled as 0.6.0",
++    "pushinbr/pam-native-lottie": "^0.1.0",
+     "pushinbr/pam-native-media-editor": "^0.3.0",
+     "pushinbr/pam-native-nitro": "^0.5.0",
+     "pushinbr/pam-native-observability": "dev-fix/ios-compile-20261026 as 0.5.2",
+diff --git a/src/Chat/Timeline/TimelineRowPresenter.php b/src/Chat/Timeline/TimelineRowPresenter.php
+index d228be7..1955cda 100644
+--- a/src/Chat/Timeline/TimelineRowPresenter.php
++++ b/src/Chat/Timeline/TimelineRowPresenter.php
+@@ -546,6 +546,8 @@ final class TimelineRowPresenter
+             ],
+             'emoji' => $emoji !== '' || $type === MessageType::Emoji->value ? [
+                 'image' => ($images['emoji']['visible'] ?? false) ? $images['emoji'] : null,
++                // RN LightBubbles NotoAnimatedEmoji: the Lottie JSON plays natively (webp only without it).
++                'lottieUrl' => (string) ($message['emojiLottieUrl'] ?? ''),
+                 'label' => 'Emoji animado '.$emoji,
+                 'text' => $emoji !== '' ? $emoji : (string) ($message['emojiFallback'] ?? ''),
+             ] : null,
+diff --git a/src/Components/Conversation/ChatMessageRow.pam.php b/src/Components/Conversation/ChatMessageRow.pam.php
+index fda52ed..f272179 100644
+--- a/src/Components/Conversation/ChatMessageRow.pam.php
++++ b/src/Components/Conversation/ChatMessageRow.pam.php
+@@ -449,8 +449,17 @@ final class ChatMessageRow extends Component
+                         {{ $message['gif']['title'] }}
+                     </Text>
+                 </Column>
++                <!-- RN LightBubbles NotoAnimatedEmoji: LottieView playing while the row's media is active, paused (same frame) otherwise. -->
++                <Lottie
++                    p-if="$message['emoji'] !== null && $message['emoji']['lottieUrl'] !== ''"
++                    :uri="$message['emoji']['lottieUrl']"
++                    class="message-emoji-animated"
++                    :playing="$context['mediaActive'] ?? true"
++                    :fallback="$message['emoji']['text']"
++                    :label="$message['emoji']['label']"
++                />
+                 <Image
+-                    p-if="$message['emoji'] !== null && $message['emoji']['image'] !== null"
++                    p-else-if="$message['emoji'] !== null && $message['emoji']['image'] !== null"
+                     :source="$message['emoji']['image']['source']"
+                     :cacheKey="mediaKey($message['emoji']['image']['source'], 'media')"
+                     class="message-emoji-animated"
+diff --git a/src/Components/Conversation/ConversationExpressionPanel.pam.php b/src/Components/Conversation/ConversationExpressionPanel.pam.php
+index fd3964f..341e076 100644
+--- a/src/Components/Conversation/ConversationExpressionPanel.pam.php
++++ b/src/Components/Conversation/ConversationExpressionPanel.pam.php
+@@ -31,6 +31,8 @@ final class ConversationExpressionPanel extends Component
+ {
+     use StableImageKeys;
+ 
++    /** RN GifPickerSheet MAX_ANIMATED_NOTO_TILES. */
++    public const int MAX_ANIMATED_STICKERS = 24;
+     /** RN expressionLift EXPRESSION_SEARCH_BAR_HEIGHT / EXPRESSION_COMPACT_HEIGHT. */
+     public const int SEARCH_BAR_HEIGHT = 50;
+ 
+@@ -438,7 +440,12 @@ final class ConversationExpressionPanel extends Component
+     public function stickerRows(): array
+     {
+         $rows = [];
+-        foreach (array_chunk($this->stickers(), $this->stickerColumns()) as $index => $items) {
++        $columns = $this->stickerColumns();
++        foreach (array_chunk($this->stickers(), $columns) as $index => $items) {
++            foreach ($items as $offset => $item) {
++                // RN GifPickerSheet MAX_ANIMATED_NOTO_TILES: only the first tiles run a Lottie; the rest show its first frame.
++                $items[$offset]['animate'] = $index * $columns + $offset < self::MAX_ANIMATED_STICKERS;
++            }
+             $rows[] = ['key' => 'sticker-row-'.$index.'-'.$items[0]['id'], 'items' => $items];
+         }
+ 
+@@ -564,7 +571,12 @@ final class ConversationExpressionPanel extends Component
+                     pressedScale="0.88"
+                     on:press="pickSticker($sticker['id'])"
+                 >
+-                    <Text allowFontScaling="false" :fontSize="(stripHeight() - 12) * 0.6">{{ $sticker['emoji'] }}</Text>
++                    <Lottie
++                        :uri="$sticker['lottieUrl']"
++                        :size="stripHeight() - 24"
++                        playing="true"
++                        :fallback="$sticker['emoji']"
++                    />
+                 </Pressable>
+             </VirtualizedList>
+             <VirtualizedList
+@@ -771,7 +783,12 @@ final class ConversationExpressionPanel extends Component
+                             pressedScale="0.88"
+                             on:press="pickSticker($sticker['id'])"
+                         >
+-                            <Text allowFontScaling="false" :fontSize="stickerCell() * 0.6">{{ $sticker['emoji'] }}</Text>
++                            <Lottie
++                                :uri="$sticker['lottieUrl']"
++                                :size="stickerCell() - 12"
++                                :playing="$sticker['animate']"
++                                :fallback="$sticker['emoji']"
++                            />
+                         </Pressable>
+                     </Row>
+                 </VirtualizedList>

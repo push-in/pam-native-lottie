@@ -1,0 +1,11 @@
+{
+    "$schema": "vendor/pushinbr/pam-native-plugin-kit/resources/pam-native.idl.schema.json",
+    "version": 1,
+    "namespace": "Pam.Lottie",
+    "enums": {
+        "LottieSourceKind": {"Url": 1, "Json": 2},
+        "LottieResizeMode": {"Contain": 1, "Cover": 2, "Center": 3},
+        "LottieEventKind": {"Loaded": 1, "Failed": 2, "Finished": 3}
+    },
+    "records": {}
+}

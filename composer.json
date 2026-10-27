@@ -1,0 +1,46 @@
+{
+    "name": "pushinbr/pam-native-lottie",
+    "description": "Native Lottie animations for PAM Native: lottie-android and lottie-ios behind one host view, paused off-screen, with a bounded composition cache.",
+    "type": "pam-native-plugin",
+    "license": "Apache-2.0",
+    "keywords": [
+        "pam",
+        "native",
+        "lottie",
+        "animation",
+        "bodymovin",
+        "android",
+        "ios",
+        "php"
+    ],
+    "homepage": "https://github.com/push-in/pam-native-lottie",
+    "support": {
+        "issues": "https://github.com/push-in/pam-native-lottie/issues",
+        "source": "https://github.com/push-in/pam-native-lottie",
+        "docs": "https://github.com/push-in/pam-native-lottie/blob/main/docs/lottie.md"
+    },
+    "require": {
+        "php": "^8.5",
+        "pushinbr/pam-native": "^1.0"
+    },
+    "require-dev": {
+        "pushinbr/pam-native-plugin-kit": "^0.2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pam\\Native\\Lottie\\": "src/"
+        }
+    },
+    "extra": {
+        "pam-native": {
+            "plugin": "pam-native.plugin.json"
+        }
+    },
+    "scripts": {
+        "test": "php tests/run.php"
+    },
+    "config": {
+        "platform-check": true,
+        "sort-packages": true
+    }
+}
