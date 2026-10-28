@@ -3,6 +3,7 @@ package dev.pam.lottie
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
@@ -63,10 +64,13 @@ class LottieViewFactory(context: Context) : NativeViewFactory {
  * motion) the first frame is shown. A fallback label covers the view until
  * the composition is ready and when it fails.
  */
+@SuppressLint("ViewConstructor") // built only by LottieViewFactory, never inflated
 internal class PamLottieView(context: Context, private val emit: (ByteArray) -> Unit) : FrameLayout(context) {
     private val animation = LottieAnimationView(context).apply {
         setRenderMode(RenderMode.HARDWARE)
-        // The view decides reduced motion itself (first frame, never the last).
+        // The view decides reduced motion itself (first frame, never the last);
+        // the replacement (LottieConfig.setReducedMotionOption) is process-wide.
+        @Suppress("DEPRECATION")
         setIgnoreDisabledSystemAnimations(true)
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
         visibility = INVISIBLE

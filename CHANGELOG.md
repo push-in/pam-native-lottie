@@ -13,3 +13,6 @@
   trimmed on memory pressure; one shared load per URL; parsing on background threads.
 - Tests: 9 PHP contracts, 8 JVM unit tests (props, colors, LRU, in-flight joins, playback policy),
   iOS core harness.
+- Android lint clean with warnings as errors (`toUri()`, programmatic-only view);
+  compiled against the PAM Native host build on Android and for the iOS Simulator
+  (lottie-spm resolves `from: 4.5.0`, currently 4.6.1).

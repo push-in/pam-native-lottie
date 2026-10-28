@@ -1,9 +1,9 @@
 package dev.pam.lottie
 
 import android.content.Context
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import androidx.core.net.toUri
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import java.io.ByteArrayOutputStream
@@ -81,7 +81,7 @@ internal object LottieLoader {
     }
 
     private fun read(context: Context, source: String): String {
-        val uri = Uri.parse(source)
+        val uri = source.toUri()
         return when (uri.scheme?.lowercase()) {
             "http", "https" -> download(source)
             "file" -> File(requireNotNull(uri.path) { "Invalid file URL." }).inputStream().use(::readBounded)
