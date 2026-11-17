@@ -11,7 +11,7 @@
     },
     "android": {
         "namespace": "dev.pam.lottie",
-        "minSdk": 26,
+        "minSdk": 24,
         "dependencies": [
             "com.airbnb.android:lottie:6.6.0"
         ],

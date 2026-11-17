@@ -1,5 +1,7 @@
 package dev.pam.lottie
 
+import android.provider.Settings
+import android.os.Build
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
@@ -166,7 +168,7 @@ internal class PamLottieView(context: Context, private val emit: (ByteArray) -> 
     private fun applyPlayback() {
         val current = props ?: return
         if (composition == null) return
-        when (lottiePlayback(current.playing, current.progress, isAttachedToWindow, visibleToUser, ValueAnimator.areAnimatorsEnabled(), finished)) {
+        when (lottiePlayback(current.playing, current.progress, isAttachedToWindow, visibleToUser, animatorsEnabled(context), finished)) {
             LottiePlayback.PIN -> {
                 if (animation.isAnimating) animation.pauseAnimation()
                 animation.progress = current.progress ?: 0f
@@ -225,3 +227,13 @@ internal class PamLottieView(context: Context, private val emit: (ByteArray) -> 
         runCatching { emit(WireMap.encode(mapOf("event" to WireValue.Integer(event.toLong()), *extra))) }
     }
 }
+
+/** [ValueAnimator.areAnimatorsEnabled] is API 26+; Android 7.x reads the duration scale. */
+private fun animatorsEnabled(context: Context): Boolean =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        ValueAnimator.areAnimatorsEnabled()
+    } else {
+        runCatching {
+            Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) != 0f
+        }.getOrDefault(true)
+    }

@@ -55,7 +55,7 @@ More: [`examples/EmojiTile.php`](examples/EmojiTile.php) (a picker tile that ani
 
 | Platform | Support | Notes |
 | --- | --- | --- |
-| Android | API 26+ | lottie-android 6.6.0, `RenderMode.HARDWARE` |
+| Android | API 24+ | lottie-android 6.6.0, `RenderMode.HARDWARE` |
 | iOS | 15.0+ | lottie-ios 4.5 via `lottie-spm`, QuartzCore, UIKit |
 | PAM Native | 1.0.0 to < 2.0.0 | From `pam-native.plugin.json`; PHP 8.5+ |
 
